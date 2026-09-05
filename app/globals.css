@@ -25,6 +25,8 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/*loading-overlay*/
+
 .loading-overlay {
   position: fixed;
   inset: 0;
@@ -47,8 +49,11 @@ body {
   }
 }
 
+/*Dark Mode and Light Mode*/
 @custom-variant dark (&:where(.dark, .dark *));
 
+
+/*Unlimeted horizontal scroll skills*/
 
 @keyframes marquee {
   from {
@@ -65,4 +70,45 @@ body {
 
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+/*Scroll Messages*/
+
+.chat-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.chat-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Dark mode */
+.dark .chat-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.dark .chat-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark .chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dark .chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
 }

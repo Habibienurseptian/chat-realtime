@@ -150,30 +150,43 @@ export function ChatModal({
                 aria-label="Tutup chat"
                 className="flex h-8 w-8 items-center justify-center rounded-full text-black/60 transition hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             {/* Messages */}
-            <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
+            <div
+              ref={scrollRef}
+              className="chat-scrollbar flex-1 space-y-4 overflow-y-auto px-5 py-4"
+            >
               {messages.map((msg) => {
                 const isMe = msg.sender_id === identity?.id;
+
                 return (
-                  <div key={msg.id} className={`flex gap-2 ${isMe ? "flex-row-reverse" : ""}`}>
+                  <div
+                    key={msg.id}
+                    className={`flex gap-2 ${isMe ? "flex-row-reverse" : ""}`}
+                  >
                     <img
                       src={msg.avatar_url}
                       alt={msg.sender_name}
                       className="h-7 w-7 shrink-0 rounded-full bg-black/5 dark:bg-white/10"
                     />
-                    <div className={`flex max-w-[75%] flex-col ${isMe ? "items-end" : "items-start"}`}>
+
+                    <div
+                      className={`flex max-w-[75%] flex-col ${
+                        isMe ? "items-end" : "items-start"
+                      }`}
+                    >
                       {!isMe && (
                         <span className="mb-1 px-1 text-[11px] text-black/40 dark:text-white/40">
                           {msg.sender_name}
                           {msg.city ? ` · ${msg.city}` : ""}
                         </span>
                       )}
+
                       <div
                         className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                           isMe
@@ -188,6 +201,7 @@ export function ChatModal({
                 );
               })}
             </div>
+
 
             {/* Input */}
             <div className="flex items-center gap-2 border-t border-black/10 px-4 py-3 dark:border-white/10">
@@ -204,7 +218,7 @@ export function ChatModal({
                 aria-label="Kirim pesan"
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                 </svg>
               </button>

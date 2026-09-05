@@ -16,11 +16,11 @@ export const Navbar = () => {
     }
 
     useEffect(() => {
-        document.body.style.overflow = isMobileMenuOpen ? "hidden" : "auto"
+        document.body.style.overflow = isMobileMenuOpen || isChatOpen ? "hidden" : "auto"
         return () => {
             document.body.style.overflow = "auto"
         }
-    }, [isMobileMenuOpen])
+    }, [isMobileMenuOpen, isChatOpen])
 
     useEffect(() => {
         setIsMobileMenuOpen(false)
@@ -41,7 +41,7 @@ export const Navbar = () => {
 
     return (
         <>
-            <header className="sticky top-0 z-[9999] border-b border-black/10 bg-white/80 backdrop-blur-lg backdrop-saturate-150 dark:border-white/10 dark:bg-black/80">
+            <header className="sticky top-0 z-[10001] border-b border-black/10 bg-white/80 backdrop-blur-lg backdrop-saturate-150 dark:border-white/10 dark:bg-black/80">
                 <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 lg:px-8">
                     <Link
                         href="/"
@@ -103,71 +103,80 @@ export const Navbar = () => {
                             type="button"
                             aria-label="Toggle menu"
                             aria-expanded={isMobileMenuOpen}
-                            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-black/10 text-black transition hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/10"
+                            className="relative z-[10001] flex h-9 w-9 items-center justify-center rounded-full border border-black/10 text-black transition hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/10"
                         >
                             <span className="relative block h-4 w-4">
+                                {/* Top / X */}
                                 <span
-                                    className={`absolute left-0 top-0.5 h-[1.5px] w-4 bg-current transition-all duration-300 ${
-                                        isMobileMenuOpen ? "top-[7px] rotate-45" : ""
+                                    className={`absolute left-1/2 top-1/2 h-[1.5px] w-4 -translate-x-1/2 -translate-y-1/2 bg-current origin-center transition-transform duration-300 ${
+                                        isMobileMenuOpen ? "rotate-45" : "-translate-y-[6px]"
                                     }`}
                                 />
+                                {/* Middle */}
                                 <span
-                                    className={`absolute left-0 top-[7px] h-[1.5px] w-4 bg-current transition-all duration-300 ${
+                                    className={`absolute left-1/2 top-1/2 h-[1.5px] w-4 -translate-x-1/2 -translate-y-1/2 bg-current transition-opacity duration-200 ${
                                         isMobileMenuOpen ? "opacity-0" : "opacity-100"
                                     }`}
                                 />
+                                {/* Bottom / X */}
                                 <span
-                                    className={`absolute left-0 top-[13px] h-[1.5px] w-4 bg-current transition-all duration-300 ${
-                                        isMobileMenuOpen ? "top-[7px] -rotate-45" : ""
+                                    className={`absolute left-1/2 top-1/2 h-[1.5px] w-4 -translate-x-1/2 -translate-y-1/2 bg-current origin-center transition-transform duration-300 ${
+                                        isMobileMenuOpen ? "-rotate-45" : "translate-y-[6px]"
                                     }`}
                                 />
                             </span>
                         </button>
                     </div>
                 </nav>
-
-                {/* Mobile menu panel */}
-                <div
-                    className={`fixed inset-x-0 top-[73px] z-[9998] origin-top border-b border-black/10 bg-white/95 backdrop-blur-lg transition-all duration-300 ease-out lg:hidden dark:border-white/10 dark:bg-black/95 ${
-                        isMobileMenuOpen
-                            ? "translate-y-0 opacity-100"
-                            : "pointer-events-none -translate-y-4 opacity-0"
-                    }`}
-                >
-                    <ul className="flex flex-col gap-1 p-4">
-                        {navItems.map((item, index) => {
-                            const isActive = pathname === item.path
-                            return (
-                                <li
-                                    key={item.path}
-                                    className="transition-all duration-300"
-                                    style={{
-                                        transitionDelay: isMobileMenuOpen ? `${index * 50}ms` : "0ms",
-                                        opacity: isMobileMenuOpen ? 1 : 0,
-                                        transform: isMobileMenuOpen ? "translateY(0)" : "translateY(-8px)",
-                                    }}
-                                >
-                                    <Link
-                                        href={item.path}
-                                        className={`flex w-full items-center rounded-xl px-4 py-3 text-base font-medium transition ${
-                                            isActive
-                                                ? "bg-black text-white dark:bg-white dark:text-black"
-                                                : "text-black/70 hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/10"
-                                        }`}
-                                    >
-                                        {item.name}
-                                    </Link>
-                                </li>
-                            )
-                        })}
-                        <li className="mt-2 px-4">
-                            <button className="w-full rounded-xl bg-black px-4 py-3 text-base font-medium text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85">
-                                Login
-                            </button>
-                        </li>
-                    </ul>
-                </div>
             </header>
+
+            {/* Mobile menu — overlay full screen, tanpa header/tombol close tambahan */}
+            <div
+                className={`fixed inset-0 z-[10000] flex flex-col items-center justify-center gap-2 bg-white px-6 transition-opacity duration-300 ease-out lg:hidden dark:bg-black ${
+                    isMobileMenuOpen
+                        ? "pointer-events-auto opacity-100"
+                        : "pointer-events-none opacity-0"
+                }`}
+            >
+                {navItems.map((item, index) => {
+                    const isActive = pathname === item.path
+                    return (
+                        <div
+                            key={item.path}
+                            className="w-full max-w-xs transition-all duration-300"
+                            style={{
+                                transitionDelay: isMobileMenuOpen ? `${index * 60}ms` : "0ms",
+                                opacity: isMobileMenuOpen ? 1 : 0,
+                                transform: isMobileMenuOpen ? "translateY(0)" : "translateY(12px)",
+                            }}
+                        >
+                            <Link
+                                href={item.path}
+                                className={`flex w-full items-center justify-center rounded-2xl px-6 py-4 text-xl font-medium transition ${
+                                    isActive
+                                        ? "bg-black text-white dark:bg-white dark:text-black"
+                                        : "text-black/70 hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/10"
+                                }`}
+                            >
+                                {item.name}
+                            </Link>
+                        </div>
+                    )
+                })}
+
+                <div
+                    className="mt-4 w-full max-w-xs transition-all duration-300"
+                    style={{
+                        transitionDelay: isMobileMenuOpen ? `${navItems.length * 60}ms` : "0ms",
+                        opacity: isMobileMenuOpen ? 1 : 0,
+                        transform: isMobileMenuOpen ? "translateY(0)" : "translateY(12px)",
+                    }}
+                >
+                    <button className="w-full rounded-2xl bg-black px-6 py-4 text-lg font-medium text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85">
+                        Login
+                    </button>
+                </div>
+            </div>
 
             <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
         </>

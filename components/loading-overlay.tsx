@@ -52,7 +52,7 @@ export default function LoadingOverlay() {
                     document.body.style.overflow = ""
                 }
             }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-[#050505] px-6"
+            className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden bg-[#050505] px-6"
         >
             {/* Background glow */}
             <div className="pointer-events-none absolute inset-0">
