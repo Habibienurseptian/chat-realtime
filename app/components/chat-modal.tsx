@@ -4,17 +4,17 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGuestIdentity } from "@/app/hooks/use-guest-identity";
 import { useGuestLocation } from "@/app/hooks/use-guest-location";
-import { getSocket } from "@/app/lib/socket";
+import { supabase } from "@/app/lib/supabase";
 
 type ChatMessage = {
   id: string;
-  senderId: string;
-  senderName: string;
-  avatarUrl: string;
-  city?: string;
-  country?: string;
+  sender_id: string;
+  sender_name: string;
+  avatar_url: string;
+  city: string | null;
+  country: string | null;
   text: string;
-  timestamp: number;
+  created_at: string;
 };
 
 export function ChatModal({
@@ -31,19 +31,37 @@ export function ChatModal({
   const [isConnected, setIsConnected] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Ambil 50 pesan terakhir saat modal pertama dibuka
   useEffect(() => {
-    const socket = getSocket();
+    if (!isOpen) return;
 
-    socket.on("connect", () => setIsConnected(true));
-    socket.on("disconnect", () => setIsConnected(false));
-    socket.on("history", (past: ChatMessage[]) => setMessages(past));
-    socket.on("message", (msg: ChatMessage) => setMessages((prev) => [...prev, msg]));
+    supabase
+      .from("messages")
+      .select("*")
+      .order("created_at", { ascending: true })
+      .limit(50)
+      .then(({ data, error }) => {
+        if (!error && data) setMessages(data);
+      });
+  }, [isOpen]);
+
+  // Subscribe ke pesan baru secara realtime
+  useEffect(() => {
+    const channel = supabase
+      .channel("public:messages")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+          setMessages((prev) => [...prev, payload.new as ChatMessage]);
+        }
+      )
+      .subscribe((status) => {
+        setIsConnected(status === "SUBSCRIBED");
+      });
 
     return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("history");
-      socket.off("message");
+      supabase.removeChannel(channel);
     };
   }, []);
 
@@ -57,20 +75,22 @@ export function ChatModal({
     return () => window.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!input.trim() || !identity) return;
 
-    const payload = {
-      senderId: identity.id,
-      senderName: identity.name,
-      avatarUrl: identity.avatarUrl,
-      city: location.status === "ready" ? location.city : undefined,
-      country: location.status === "ready" ? location.country : undefined,
-      text: input.trim(),
-    };
-
-    getSocket().emit("message", payload);
+    const text = input.trim();
     setInput("");
+
+    const { error } = await supabase.from("messages").insert({
+      sender_id: identity.id,
+      sender_name: identity.name,
+      avatar_url: identity.avatarUrl,
+      city: location.status === "ready" ? location.city : null,
+      country: location.status === "ready" ? location.country : null,
+      text,
+    });
+
+    if (error) console.error("Gagal mengirim pesan:", error.message);
   };
 
   const locationLabel =
@@ -130,7 +150,7 @@ export function ChatModal({
                 aria-label="Tutup chat"
                 className="flex h-8 w-8 items-center justify-center rounded-full text-black/60 transition hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -139,18 +159,18 @@ export function ChatModal({
             {/* Messages */}
             <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
               {messages.map((msg) => {
-                const isMe = msg.senderId === identity?.id;
+                const isMe = msg.sender_id === identity?.id;
                 return (
                   <div key={msg.id} className={`flex gap-2 ${isMe ? "flex-row-reverse" : ""}`}>
                     <img
-                      src={msg.avatarUrl}
-                      alt={msg.senderName}
+                      src={msg.avatar_url}
+                      alt={msg.sender_name}
                       className="h-7 w-7 shrink-0 rounded-full bg-black/5 dark:bg-white/10"
                     />
                     <div className={`flex max-w-[75%] flex-col ${isMe ? "items-end" : "items-start"}`}>
                       {!isMe && (
                         <span className="mb-1 px-1 text-[11px] text-black/40 dark:text-white/40">
-                          {msg.senderName}
+                          {msg.sender_name}
                           {msg.city ? ` · ${msg.city}` : ""}
                         </span>
                       )}
@@ -184,7 +204,7 @@ export function ChatModal({
                 aria-label="Kirim pesan"
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                 </svg>
               </button>
