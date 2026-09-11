@@ -83,9 +83,9 @@ export const Navbar = () => {
                             <ChatIcon />
                         </button>
                         <ThemeToggle />
-                        <button className="rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85">
+                        {/* <button className="rounded-full bg-black px-5 py-2 text-sm font-medium text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85">
                             Login
-                        </button>
+                        </button> */}
                     </div>
 
                     {/* Mobile controls */}
@@ -172,9 +172,9 @@ export const Navbar = () => {
                         transform: isMobileMenuOpen ? "translateY(0)" : "translateY(12px)",
                     }}
                 >
-                    <button className="w-full rounded-2xl bg-black px-6 py-4 text-lg font-medium text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85">
+                    {/* <button className="w-full rounded-2xl bg-black px-6 py-4 text-lg font-medium text-white transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/85">
                         Login
-                    </button>
+                    </button> */}
                 </div>
             </div>
 

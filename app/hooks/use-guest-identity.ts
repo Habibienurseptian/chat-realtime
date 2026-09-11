@@ -11,6 +11,16 @@ export type GuestIdentity = {
   avatarUrl: string;
 };
 
+function randomName() {
+  return `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${
+    ANIMALS[Math.floor(Math.random() * ANIMALS.length)]
+  }`;
+}
+
+function avatarUrlFromSeed(seed: string) {
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`;
+}
+
 export function useGuestIdentity() {
   const [identity, setIdentity] = useState<GuestIdentity | null>(null);
 
@@ -22,16 +32,23 @@ export function useGuestIdentity() {
     }
 
     const id = crypto.randomUUID();
-    const name = `${ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)]} ${
-      ANIMALS[Math.floor(Math.random() * ANIMALS.length)]
-    }`;
-    // DiceBear: avatar SVG deterministik berdasarkan seed, gratis, tanpa API key
-    const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${id}`;
-
-    const newIdentity = { id, name, avatarUrl };
+    const newIdentity: GuestIdentity = {
+      id,
+      name: randomName(),
+      avatarUrl: avatarUrlFromSeed(id),
+    };
     localStorage.setItem("guest_identity", JSON.stringify(newIdentity));
     setIdentity(newIdentity);
   }, []);
 
-  return identity;
+  const updateIdentity = (updates: Partial<Pick<GuestIdentity, "name" | "avatarUrl">>) => {
+    setIdentity((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...updates };
+      localStorage.setItem("guest_identity", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  return { identity, updateIdentity, avatarUrlFromSeed };
 }
