@@ -4,12 +4,12 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LoadingOverlay from "@/components/loading-overlay";
-import { Hero } from "@/app/pages/hero";
-import { About } from "@/app/pages/about";
-import { Skills } from "@/app/pages/skills";
-import { Projects } from "@/app/pages/projects";
-import { Contact } from "@/app/pages/contact";
-import { SiteFooter } from "@/app/pages/footer";
+import { Hero } from "@/app/sections/hero";
+import { About } from "@/app/sections/about";
+import { Skills } from "@/app/sections/skills";
+import { Projects } from "@/app/sections/projects";
+import { Contact } from "@/app/sections/contact";
+import { SiteFooter } from "@/app/sections/footer";
 
 gsap.registerPlugin(ScrollTrigger);
 
